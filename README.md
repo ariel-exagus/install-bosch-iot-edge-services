@@ -6,19 +6,21 @@ _Detallaremos los pasos necesarios para instalar los servicios de Bosch IoT Edge
 Estos son los requerimientos necesarios para poder instalar el software Bosch IoT Edge Services en una plataforma Linux.
 
 * Hardware: Es necesario contar con una plataforma de Hardware que pueda correr un sistema Linux, en nuestro caso utilizaremos una _Raspberry Pi 4B_. Además ya debe contar con un sistema operativo, esta guía fue realizada con la Raspberry corriendo _Raspbian_.
-* Software: Debemos tener instalado Docker en la plataforma, en nuestro caso la Raspberry pi, para poder crear imagenes y contenedores. También es necesario tener una cuenta en [Docker Hub](https://hub.docker.com/) para poder subir las imagenes.
+* Software: Debemos tener instalado Docker en la plataforma, en nuestro caso la Raspberry pi, para poder crear imágenes y contenedores. También es necesario tener una cuenta en [Docker Hub](https://hub.docker.com/) para poder subir las imágenes.
 
 > **Nota:** Este es un enlace con los pasos para [instalar Docker en una Raspberry pi](https://phoenixnap.com/kb/docker-on-raspberry-pi)
 
 
 ## Comenzando
-_Empezaremos creando una suscrpción a Bosch IoT Suite para poder descargarnos el software del Bosch IoT Edge Services_
+_Empezaremos creando una suscripción a Bosch IoT Suite para poder descargarnos el software del Bosch IoT Edge Services_
 
 ### Crear una Suscripción a Bosch IoT Suite
 
 1. Nos dirigimos a la página de inicio de [Bosch IoT Suite](https://accounts.bosch-iot-suite.com) y creamos una cuenta. Luego realizamos una Suscripción a los servicios de _Bosch IoT Suite for Device Management_. Aquí hay una pequeña guía de como [realizar una nueva Suscripción](https://docs.bosch-iot-suite.com/device-management/Subscribe-a-service-instance.html). Debemos esperar unos segundos a que se active nuestra suscripción.
 
 2. Es importante [verificar las conexiones entre los distintos servicios](https://docs.bosch-iot-suite.com/device-management/Check-your-connections.html) que nos ofrece la plataforma de Bosch IoT Suite, para ello, en la pantalla de Sucripción, hacemos click en _Go to Developer Console_ y en el menú derecho, seleccionamos _Connections_. Allí debemos asegurarnos que las conexiones están activas (El icono enchufado). Las dos conexiones que deben estar presentes son las de _Device Management_ y _Devices via Bosch IoT Hub_.
+
+![Verificar conexión](/images/connection-icons.png)
 
 ### Agregar un Namespace
 3. Volvemos a la consola de desarrollo y [creamos un Namespace](https://docs.bosch-iot-suite.com/device-management/Register-a-namespace.html). Este nombre nos permite organizar los Objetos creados en distintos proyectos.
@@ -41,13 +43,15 @@ _Empezaremos creando una suscrpción a Bosch IoT Suite para poder descargarnos e
 ### Descargar el Agente
 5. Descargar el Agente, el cual nos va a permitir conectarnos a la plataforma de Bosch. Para ello debemos volver a la página de suscripción e ir a la sección _Download Edge Agent_. Se van a generar los links de descarga, los cuales tienen una licencia por tres meses. Descargar el archivo según la plataforma. Para Raspberry con Raspbian descargar el Edge Agent para Linux y arquitectura ARM.
 
+![Descargar Edge](/images/edge-subscription-download.png)
+
 6. Acceder a la Raspberry pi y crear un directorio donde copiar el archivo descargado. Utilizar el comando `tar -xvf com.bosch.iot.edge.agent-linux-arm.tar.gz` para descomprimir los archivos. En la misma carpeta colocar el archivo de `provisioning.json` que se obtuvo en el paso anterior. Una vez hecho esto, podemos ejecutar el script de instalación:
 
 ```
 $ mkdir bosch_iot_edge_agent
 $ cd bosch_iot_edge_agent
 ```
-Descar el archivo `com.bosch.iot.edge.agent-linux-arm.tar.gz` y copiar en el mismo directorio el archivo `provisioning.json`
+Descargars el archivo `com.bosch.iot.edge.agent-linux-arm.tar.gz` y copiar en el mismo directorio el archivo `provisioning.json`
 ```
 $ tar -xvf com.bosch.iot.edge.agent-linux-arm.tar.gz
 $ ls -al
@@ -71,7 +75,7 @@ Instalamos el agente corriendo el script `install.sh`
 ```
 $ ./install.sh.
 ```
-7. Una vez que terminada la instalación, podemos correr el agente ejecutando el script 
+7. Una vez terminada la instalación, podemos correr el agente ejecutando el script 
 
 ```
 $ ./start.sh
@@ -99,6 +103,16 @@ $  tar -xvf target-image-iot-edge-services-linux-arm-raspbian.tar
 Al terminar la descompresión, debemos tener un directorio como el siguiente:
 ```
 $ ls -al
+total 52272
+drwxr-xr-x  4 pi pi     4096 May 25 09:36 .
+drwxr-xr-x 35 pi pi     4096 Jun  6 23:44 ..
+-rw-r--r--  1 pi pi     1174 May 23 23:19 Dockerfile
+-rw-r--r--  1 pi pi    10229 May 23 23:19 License_Bosch_IoT_Edge_Services_SDK_Evaluation.txt
+drwxr-xr-x  4 pi pi     4096 May 25 09:36 mbsa
+drwxr-xr-x  5 pi pi     4096 May 25 09:36 osgi
+-rw-r--r--  1 pi pi 49638940 May 25 09:18 target-image-iot-edge-services-linux-arm-raspbian.tar.gz
+-rw-r--r--  1 pi pi  3849203 May 23 23:19 THIRDPARTYLICENSEREADME.txt
+
 ```
 
 ### Compilar la Imagen del Edge Services
@@ -119,7 +133,7 @@ arm32v7/openjdk             8-slim    2c883270745f   2 years ago     189MB
 ```
 
 ### Registrar la imagen
-13. Para poder hacer uso del manager de contenedores que nos provee el Edge Agent, debemos registrar la imagen del conenedor, en este caso la registraremos a docker hub, que es la manera más simple. Para ello previamente debemos contar con una cuenta en  [Docker Hub](https://hub.docker.com/). Realizamos un login para ingresar nuestras credenciales de Docker Hub.
+13. Para poder hacer uso del manager de contenedores que nos provee el Edge Agent, debemos registrar la imagen del contenedor, en este caso la registraremos a docker hub, que es la manera más simple. Para ello previamente debemos contar con una cuenta en  [Docker Hub](https://hub.docker.com/). Realizamos un login para ingresar nuestras credenciales de Docker Hub.
 
 ```
 $ docker login
@@ -161,7 +175,7 @@ ID |NAME |IMAGE |STATUS |FINISHED AT |EXIT CODE |
 ```
 
 ### Correr el contenedor
-18. Una ves que tenemos listo el contenedor, podemos correrlo con el siguiente comando:
+18. Una vez que tenemos listo el contenedor, podemos correrlo con el siguiente comando:
 
 ```
 sudo edgectr start <container-id> --i --a
@@ -173,7 +187,7 @@ $ sudo edgectr start 59f3a330-9508-4458-9168-3398ea65d2f1 --i --a
 ```
 Con esto ya tenemos el Edge Services corriendo en nuestra Raspberry pi. Podemos acceder a la consola Web para configurar y ver las aplicaciones corriendo, para ello abrimos un navegador y accedemos a la siguiente dirección `http://<IP-Local-Raspberry>/system/console`
 
-19. Por ultimo, podemos parar la ejecución del contenedor con el comando `edgectr stop`
+19. Por último, podemos parar la ejecución del contenedor con el comando `edgectr stop`
 ```
 $ sudo edgectr stop 59f3a330-9508-4458-9168-3398ea65d2f1
 ```
